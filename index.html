@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mert Akkaya — Elektrik Elektronik Mühendisi</title>
+<meta name="description" content="Gömülü yazılım ve Ar-Ge alanlarında deneyimli Elektrik-Elektronik Mühendisi. STM32, firmware geliştirme, donanım-yazılım entegrasyonu.">
+<meta name="robots" content="noindex, nofollow, noarchive">
+<meta name="googlebot" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --void:#0A0E13;
+  --board:#10161E;
+  --board-2:#141C25;
+  --line:#1F2C39;
+  --text:#E6EDF3;
+  --muted:#8496A6;
+  --gold:#E0B341;
+  --signal:#5FC9E8;
+  --rail:280px;
+  --pad:clamp(20px,5vw,64px);
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  background:var(--void);
+  color:var(--text);
+  font-family:"IBM Plex Sans",system-ui,-apple-system,sans-serif;
+  font-size:16px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+/* 100mil kart ızgarası — çok soluk, sadece doku */
+body::before{
+  content:"";position:fixed;inset:0;z-index:0;pointer-events:none;
+  background-image:
+    linear-gradient(var(--line) 1px,transparent 1px),
+    linear-gradient(90deg,var(--line) 1px,transparent 1px);
+  background-size:56px 56px;
+  opacity:.16;
+  mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 78%);
+  -webkit-mask-image:radial-gradient(ellipse 90% 70% at 50% 0%,#000 20%,transparent 78%);
+}
+a{color:inherit}
+::selection{background:var(--gold);color:var(--void)}
+:focus-visible{outline:2px solid var(--signal);outline-offset:3px;border-radius:2px}
+
+.shell{position:relative;z-index:1;max-width:1240px;margin:0 auto;padding:0 var(--pad)}
+
+/* ---------- SOL RAY ---------- */
+.rail{
+  position:sticky;top:0;align-self:start;
+  padding:clamp(40px,7vh,80px) 0 40px;
+}
+.mark{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.22em;
+  color:var(--gold);text-transform:uppercase;margin-bottom:22px;
+}
+.mark span{color:var(--muted)}
+.name{
+  font-family:"IBM Plex Sans Condensed",sans-serif;
+  font-weight:700;text-transform:uppercase;
+  font-size:clamp(42px,6.4vw,68px);line-height:.92;letter-spacing:-.015em;
+}
+.name em{display:block;font-style:normal;color:var(--muted)}
+.role{
+  margin-top:16px;font-size:15px;color:var(--muted);
+  border-left:2px solid var(--gold);padding-left:12px;
+}
+
+.nav{margin-top:38px;display:flex;flex-direction:column;gap:2px}
+.nav a{
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;letter-spacing:.06em;
+  color:var(--muted);text-decoration:none;padding:7px 0 7px 22px;position:relative;
+  transition:color .18s ease,padding-left .18s ease;
+}
+.nav a::before{
+  content:"";position:absolute;left:0;top:50%;width:10px;height:1px;
+  background:var(--line);transition:width .18s ease,background .18s ease;
+}
+.nav a:hover,.nav a[aria-current="true"]{color:var(--text);padding-left:28px}
+.nav a:hover::before,.nav a[aria-current="true"]::before{width:18px;background:var(--gold)}
+
+.contacts{margin-top:38px;display:flex;flex-direction:column;gap:9px}
+.contacts a{
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);
+  text-decoration:none;display:flex;gap:10px;align-items:center;transition:color .18s ease;
+  word-break:break-all;
+}
+.contacts a b{color:var(--gold);font-weight:500;flex:none;width:34px}
+.contacts a:hover{color:var(--text)}
+
+.print-btn{
+  margin-top:32px;display:inline-flex;align-items:center;gap:9px;
+  background:none;border:1px solid var(--line);color:var(--muted);
+  font-family:"IBM Plex Mono",monospace;font-size:12px;letter-spacing:.08em;
+  padding:11px 16px;cursor:pointer;transition:all .18s ease;text-transform:uppercase;
+}
+.print-btn:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ---------- İÇERİK ---------- */
+.main{padding:clamp(40px,7vh,80px) 0 clamp(60px,10vh,120px)}
+.block{padding:clamp(38px,6vh,64px) 0;border-top:1px solid var(--line)}
+.block:first-child{border-top:0;padding-top:0}
+
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:var(--gold);margin-bottom:20px;
+  display:flex;align-items:center;gap:12px;
+}
+.eyebrow::after{content:"";flex:1;height:1px;background:var(--line)}
+
+.lede{font-size:clamp(17px,2vw,19.5px);line-height:1.72;color:#C4D0DB;max-width:62ch}
+.lede strong{color:var(--text);font-weight:600}
+
+/* --- İMZA: sinyal yolu --- */
+.timeline{position:relative;padding-left:40px}
+.trace{position:absolute;left:8px;top:6px;bottom:14px;width:2px;background:var(--line)}
+.trace i{
+  position:absolute;inset:0 0 auto 0;height:var(--fill,0%);
+  background:linear-gradient(180deg,var(--gold),var(--signal));
+  transition:height .12s linear;
+}
+.job{position:relative;padding-bottom:46px}
+.job:last-child{padding-bottom:0}
+/* via / lehim pedi */
+.job::before{
+  content:"";position:absolute;left:-38px;top:9px;width:18px;height:18px;
+  border-radius:50%;background:var(--void);border:2px solid var(--line);
+  transition:border-color .35s ease,box-shadow .35s ease;
+}
+.job::after{
+  content:"";position:absolute;left:-32px;top:15px;width:6px;height:6px;
+  border-radius:50%;background:var(--line);transition:background .35s ease;
+}
+.job.live::before{border-color:var(--gold);box-shadow:0 0 0 5px rgba(224,179,65,.09)}
+.job.live::after{background:var(--gold)}
+
+.job h3{
+  font-family:"IBM Plex Sans Condensed",sans-serif;font-weight:700;
+  font-size:clamp(20px,2.6vw,25px);text-transform:uppercase;letter-spacing:.005em;line-height:1.15;
+}
+.meta{
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;color:var(--muted);
+  margin:7px 0 16px;display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;
+}
+.meta .co{color:var(--signal)}
+.meta .sep{color:var(--line)}
+.job ul{list-style:none;display:flex;flex-direction:column;gap:9px;max-width:66ch}
+.job li{position:relative;padding-left:20px;color:#B6C4D1;font-size:15.3px;line-height:1.6}
+.job li::before{
+  content:"";position:absolute;left:2px;top:10px;width:7px;height:1px;background:var(--gold);opacity:.7;
+}
+
+/* --- kartlar --- */
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(272px,1fr))}
+.card{
+  background:var(--board);border:1px solid var(--line);
+  padding:20px 20px 22px;transition:border-color .2s ease,background .2s ease;
+}
+.card:hover{border-color:#2C3E4E;background:var(--board-2)}
+.card .idx{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--gold);
+  letter-spacing:.14em;display:block;margin-bottom:9px;
+}
+.card p{font-size:15.2px;line-height:1.5;color:#C4D0DB}
+
+/* --- beceriler --- */
+.skills{display:grid;gap:26px;grid-template-columns:repeat(auto-fit,minmax(230px,1fr))}
+.skills h4{
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--muted);margin-bottom:13px;font-weight:400;
+}
+.tags{display:flex;flex-wrap:wrap;gap:7px}
+.tag{
+  font-family:"IBM Plex Mono",monospace;font-size:12.5px;
+  border:1px solid var(--line);padding:6px 11px;color:#C4D0DB;
+  transition:border-color .18s ease,color .18s ease;
+}
+.tag:hover{border-color:var(--gold);color:var(--gold)}
+
+/* --- listeler --- */
+.plain{list-style:none;columns:2;column-gap:34px}
+.plain li{
+  break-inside:avoid;padding:7px 0 7px 18px;position:relative;
+  font-size:15px;color:#B6C4D1;
+}
+.plain li::before{content:"";position:absolute;left:0;top:16px;width:6px;height:6px;border:1px solid var(--gold);opacity:.6}
+
+.edu{display:flex;flex-wrap:wrap;gap:8px 26px;align-items:baseline}
+.edu strong{font-size:19px;font-weight:600}
+.edu span{color:var(--muted)}
+.edu .yr{font-family:"IBM Plex Mono",monospace;font-size:13px;color:var(--gold)}
+
+.ref{border-left:2px solid var(--line);padding-left:18px}
+.ref strong{display:block;font-size:17px}
+.ref span{color:var(--muted);font-size:14.5px}
+
+footer{
+  border-top:1px solid var(--line);padding:26px 0 46px;
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);
+  display:flex;flex-wrap:wrap;gap:8px 20px;justify-content:space-between;
+}
+
+/* --- giriş animasyonu --- */
+.rv{opacity:0;transform:translateY(14px);transition:opacity .55s ease,transform .55s ease}
+.rv.in{opacity:1;transform:none}
+
+/* ---------- DÜZEN ---------- */
+@media (min-width:900px){
+  .shell{display:grid;grid-template-columns:var(--rail) 1fr;gap:clamp(48px,6vw,90px);align-items:start}
+  .rail{height:100vh;display:flex;flex-direction:column;overflow-y:auto}
+  .print-btn{margin-top:auto}
+}
+@media (max-width:899px){
+  .rail{position:relative;border-bottom:1px solid var(--line);padding-bottom:32px}
+  .nav{display:none}
+  .plain{columns:1}
+  .timeline{padding-left:30px}
+  .trace{left:4px}
+  .job::before{left:-32px}
+  .job::after{left:-26px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{transition:none!important;animation:none!important}
+  .rv{opacity:1;transform:none}
+}
+
+/* ---------- YAZDIRMA / PDF ---------- */
+@media print{
+  @page{margin:14mm}
+  body{background:#fff;color:#000;font-size:10.5pt}
+  body::before,.nav,.print-btn,.trace{display:none}
+  .shell{display:block;max-width:none;padding:0}
+  .rail{position:static;height:auto;padding:0 0 12pt;border-bottom:1px solid #ccc}
+  .name{font-size:30pt;color:#000}
+  .name em,.role,.meta,.muted,.contacts a{color:#444}
+  .eyebrow{color:#000}
+  .eyebrow::after{background:#ccc}
+  .block{border-top:1px solid #ddd;padding:14pt 0;break-inside:avoid}
+  .card{border:1px solid #ccc;background:#fff}
+  .card p,.job li,.plain li,.tag,.lede{color:#000}
+  .job{break-inside:avoid;padding-bottom:14pt}
+  .job::before,.job::after{display:none}
+  .timeline{padding-left:0}
+  .rv{opacity:1;transform:none}
+  a{text-decoration:none}
+}
+</style>
+</head>
+<body>
+
+<div class="shell">
+
+  <!-- ================= SOL RAY ================= -->
+  <aside class="rail">
+    <div class="mark">Araştırma Geliştirme Mühendisi <span>/ Gömülü Yazılım</span></div>
+
+    <h1 class="name">Mert<em>Akkaya</em></h1>
+    <p class="role">Elektrik Elektronik Mühendisi</p>
+
+    <nav class="nav" aria-label="Bölümler">
+      <a href="#hakkimda">Hakkımda</a>
+      <a href="#deneyim">Deneyim</a>
+      <a href="#projeler">Projeler</a>
+      <a href="#beceriler">Beceriler</a>
+      <a href="#egitim">Eğitim</a>
+      <a href="#sertifikalar">Sertifikalar</a>
+    </nav>
+
+    <div class="contacts">
+      <a id="mailLink" href="#"><b>MAIL</b><span id="mailText">e-posta yükleniyor…</span></a>
+      <a href="https://www.linkedin.com/in/mert-akkaya-123ma456" target="_blank" rel="noopener"><b>IN</b>linkedin.com/in/mert-akkaya-123ma456</a>
+      <a href="https://www.kariyer.net/ozgecmis/ma2lf9p2z8" target="_blank" rel="noopener"><b>CV</b>kariyer.net/ozgecmis/ma2lf9p2z8</a>
+    </div>
+
+    <button class="print-btn" onclick="window.print()">PDF olarak kaydet</button>
+  </aside>
+
+  <!-- ================= İÇERİK ================= -->
+  <main class="main">
+
+    <section class="block rv" id="hakkimda">
+      <div class="eyebrow">Hakkımda</div>
+      <p class="lede">
+        Gömülü yazılım ve PCB tasarımı alanlarında deneyim sahibi olan bir
+        <strong>Elektrik-Elektronik Mühendisiyim</strong> ve lisans eğitimimi İzmir Bakırçay
+        Üniversitesi'nde tamamladım. Otomat makineleri ile metal kapı dedektörleri ve savunma
+        sanayi odaklı Ar-Ge projelerinde edindiğim deneyimler sayesinde
+        <strong>gömülü sistemler, haberleşme protokolleri ve donanım-yazılım entegrasyonu</strong>
+        konularında güçlü teknik yetkinlikler kazandım. Analitik düşünme becerim, problem çözme
+        yaklaşımım ve öğrenmeye olan yüksek motivasyonum ile dinamik çalışma ortamlarında
+        ekibinize hızlı adapte olarak katma değer sağlayabileceğime inanıyorum.
+      </p>
+    </section>
+
+    <section class="block rv" id="deneyim">
+      <div class="eyebrow">Deneyim</div>
+      <div class="timeline">
+        <div class="trace" aria-hidden="true"><i></i></div>
+
+        <article class="job">
+          <h3>Gömülü Sistem Mühendisi</h3>
+          <p class="meta"><span class="co">Elektral Elektromekanik A.Ş.</span><span class="sep">—</span><span>İzmir</span><span class="sep">—</span><span>06/2024 – 08/2025</span></p>
+          <ul>
+            <li>Satış otomatları ve metal kapı dedektörleri projelerinde gömülü yazılım geliştirme ve PCB tasarımı çalışmalarında görev aldım.</li>
+            <li>STM32 ve çeşitli mikrodenetleyici mimarileri üzerinde firmware geliştirme, hata ayıklama ve optimizasyon süreçlerinde aktif rol aldım.</li>
+            <li>Donanım-yazılım entegrasyonu gerçekleştirerek sistem seviyesinde fonksiyonel test ve doğrulama çalışmaları yürüttüm.</li>
+            <li>Cihaz doğrulama, saha entegrasyon testleri ve kritik hata analizi çalışmalarıyla sistem performansının artırılmasına katkı sağladım.</li>
+            <li>Elektrik pano tasarımı ve kurulum aşamalarında görev alarak ürünlerin devreye alma süreçlerine destek verdim.</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <h3>Gömülü Sistem Mühendisi</h3>
+          <p class="meta"><span class="co">Metayıldız Bilişim Teknolojileri</span><span class="sep">—</span><span>İzmir</span><span class="sep">—</span><span>06/2023 – 12/2023</span></p>
+          <ul>
+            <li>Savunma sanayi odaklı projelerde gömülü yazılım geliştirme faaliyetlerinde görev aldım.</li>
+            <li>Donanım-yazılım entegrasyonu, sistem testleri ve hata ayıklama çalışmalarını gerçekleştirdim.</li>
+            <li>İnsansız hava ve kara aracı (İHA / İKA) prototipleme çalışmalarında yazılım geliştirme ve sistem entegrasyonu süreçlerine katkı sağladım.</li>
+            <li>Yer Kontrol İstasyonu (Ground Control Station) projelerinde yazılım modüllerinin geliştirilmesinde yer aldım.</li>
+            <li>STM32 ve Raspberry Pi tabanlı sistemler üzerinde firmware geliştirdim.</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <h3>Stajyer Mühendis</h3>
+          <p class="meta"><span class="co">SADELABS</span><span class="sep">—</span><span>İzmir</span><span class="sep">—</span><span>02/2022 – 06/2022</span></p>
+          <ul>
+            <li>Gereksinim analizi sürecinde donanım ve yazılım kısıtlamalarını dengeleyerek projenin fizibilitesini ve uygunluğunu değerlendirdim.</li>
+            <li>Mikrodenetleyici mimarilerini, çevre birimlerini ve gömülü sistem test metodolojilerini pratik uygulamalarda kullandım.</li>
+            <li>Tasarlanan sistemlerin proje isterlerine uyumu için fonksiyonel test ve hata ayıklama (debugging) süreçlerini yürüttüm.</li>
+          </ul>
+        </article>
+
+        <article class="job">
+          <h3>Stajyer Mühendis</h3>
+          <p class="meta"><span class="co">DESA Enerji</span><span class="sep">—</span><span>İzmir</span><span class="sep">—</span><span>07/2021 – 08/2021</span></p>
+          <ul>
+            <li>Doğal gazdan elektrik üretimi yapan santrallerdeki operasyonları inceleyerek enerji üretim süreçleri ve elektrik üretim sistemleri konusunda deneyim kazandım.</li>
+            <li>Üretilen enerjinin firma içi kullanımı ile ulusal şebekeye aktarılması süreçlerini yerinde gözlemledim.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="block rv" id="projeler">
+      <div class="eyebrow">Projeler</div>
+      <div class="grid">
+        <div class="card"><span class="idx">İHA</span><p>Paket teslimatı için VTOL İHA tasarımı — Teknofest 2022</p></div>
+        <div class="card"><span class="idx">GÖMÜLÜ</span><p>ARM tabanlı mikroişlemciler arası haberleşme ve çevre elemanların kontrolü</p></div>
+        <div class="card"><span class="idx">IOT</span><p>Raspberry Pi ile internet üzerinden veri aktarımı</p></div>
+        <div class="card"><span class="idx">DEVRE</span><p>RC devresinin doğal ve basamak tepkisi için devre tasarımı</p></div>
+        <div class="card"><span class="idx">SENSÖR</span><p>Anemometre tasarımı</p></div>
+        <div class="card"><span class="idx">MOBİL</span><p>Öğrenci Bilgi Sistemi Android mobil uygulaması</p></div>
+      </div>
+    </section>
+
+    <section class="block rv" id="beceriler">
+      <div class="eyebrow">Beceriler</div>
+      <div class="skills">
+        <div>
+          <h4>Teknik Beceriler</h4>
+          <div class="tags">
+            <span class="tag">C</span><span class="tag">C#</span><span class="tag">STM32</span>
+            <span class="tag">MATLAB</span><span class="tag">PADS PCB Designer</span>
+            <span class="tag">KiCad</span><span class="tag">AutoCAD</span>
+            <span class="tag">Mission Planner</span><span class="tag">Unity</span>
+            <span class="tag">Microsoft Office</span><span class="tag">İngilizce</span>
+          </div>
+        </div>
+        <div>
+          <h4>Sosyal Beceriler</h4>
+          <div class="tags">
+            <span class="tag">Analitik Düşünme</span><span class="tag">Problem Çözme</span>
+            <span class="tag">Süreç Yönetimi</span><span class="tag">Etkili İletişim</span>
+            <span class="tag">Zaman Yönetimi</span><span class="tag">Takım Çalışması</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="block rv" id="egitim">
+      <div class="eyebrow">Eğitim</div>
+      <div class="edu">
+        <strong>İzmir Bakırçay Üniversitesi</strong>
+        <span>Elektrik Elektronik Mühendisliği</span>
+        <span class="yr">2018 – 2022</span>
+      </div>
+    </section>
+
+    <section class="block rv" id="sertifikalar">
+      <div class="eyebrow">Seminer ve Sertifikalar</div>
+      <ul class="plain">
+        <li>İHA-1 — Sportif / Amatör lisans</li>
+        <li>Windbaba Rüzgar Türbini Eğitimi</li>
+        <li>Teknofest 2022</li>
+        <li>Savunma Sanayi Zirvesi</li>
+        <li>ESAS EXPO Savunma Sanayi ve Teknoloji Fuarı</li>
+        <li>DETECH'21</li>
+        <li>Ege Bölgesi Kariyer Fuarı</li>
+        <li>Kişisel Gelişim Zirvesi</li>
+        <li>İş Dünyasına Genç Bakış</li>
+        <li>İş Hayatına İlk Adım</li>
+        <li>İş Görüşmelerinde Beden Dilinin Gücü</li>
+      </ul>
+    </section>
+
+    <section class="block rv">
+      <div class="eyebrow">Referans</div>
+      <div class="ref">
+        <strong>Bayram Köse</strong>
+        <span>Doktor Öğretim Üyesi — iletişim bilgileri talep üzerine paylaşılır</span>
+      </div>
+    </section>
+
+    <footer>
+      <span>MERT AKKAYA — İZMİR</span>
+      <span>Araştırma geliştirme &amp; gömülü yazılım</span>
+    </footer>
+
+  </main>
+</div>
+
+<script>
+(function(){
+  /* E-posta kaynak kodda düz metin olarak durmuyor; parçalardan çalışma anında kuruluyor */
+  var p = ['m.mertakkaya','.a','gmail','com'];
+  var addr = p[0] + p[1] + String.fromCharCode(64) + p[2] + '.' + p[3];
+
+  var link = document.getElementById('mailLink');
+  var txt  = document.getElementById('mailText');
+  if(link && txt){
+    txt.textContent = addr;
+    link.setAttribute('href', 'mailto:' + addr);
+  }
+})();
+
+(function(){
+  var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* Bölümlerin görünürlükte açılması */
+  if('IntersectionObserver' in window && !reduce){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(e){ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } });
+    },{threshold:.08,rootMargin:'0px 0px -8% 0px'});
+    document.querySelectorAll('.rv').forEach(function(el){ io.observe(el); });
+  } else {
+    document.querySelectorAll('.rv').forEach(function(el){ el.classList.add('in'); });
+  }
+
+  /* Sinyal yolu: kaydırdıkça dolar, geçtiğin via'lar yanar */
+  var tl = document.querySelector('.timeline');
+  var fill = document.querySelector('.trace i');
+  var jobs = Array.prototype.slice.call(document.querySelectorAll('.job'));
+  var nav = Array.prototype.slice.call(document.querySelectorAll('.nav a'));
+  var secs = nav.map(function(a){ return document.querySelector(a.getAttribute('href')); });
+  var tick = false;
+
+  function update(){
+    if(tl && fill){
+      var r = tl.getBoundingClientRect();
+      var mid = window.innerHeight * 0.55;
+      var p = (mid - r.top) / r.height;
+      fill.style.setProperty('--fill', Math.max(0, Math.min(1, p)) * 100 + '%');
+      jobs.forEach(function(j){
+        var jr = j.getBoundingClientRect();
+        j.classList.toggle('live', jr.top < mid && jr.bottom > 0);
+      });
+    }
+    var cur = 0;
+    secs.forEach(function(s,i){ if(s && s.getBoundingClientRect().top < window.innerHeight*0.35) cur = i; });
+    nav.forEach(function(a,i){ a.setAttribute('aria-current', i===cur ? 'true' : 'false'); });
+    tick = false;
+  }
+  window.addEventListener('scroll', function(){
+    if(!tick){ tick = true; requestAnimationFrame(update); }
+  }, {passive:true});
+  window.addEventListener('resize', update, {passive:true});
+  update();
+})();
+</script>
+</body>
+</html>
